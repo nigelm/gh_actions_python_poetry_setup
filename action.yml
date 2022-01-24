@@ -1,4 +1,4 @@
-name: 'Python Poetry Setup'
+name: 'Setup Poetry (for Python)'
 description: 'Setup tne environment for a python poetry project'
 
 inputs:
