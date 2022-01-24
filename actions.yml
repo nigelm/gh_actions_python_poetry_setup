@@ -1,0 +1,69 @@
+name: 'Python Poetry Setup'
+description: 'Setup tne environment for a python poetry project'
+
+inputs:
+  poetry-version:
+    description: 'The version of poetry to install'
+    required: false
+    default: 1.1.12
+  python-version:
+    description: 'The version of python to install'
+    required: false
+    default: 3.10.2
+  fetch-depth:
+    description: 'The depth to checkout'
+    required: false
+    default: 1
+
+runs:
+  using: "composite"
+  steps:
+    #----------------------------------------------
+    # check-out repo and set-up python
+    #----------------------------------------------
+    - name: Check out repository
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: ${{ inputs.fetch-depth }}
+
+    - name: Set up python
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ inputs.python-version }}
+    #----------------------------------------------
+    # install & configure poetry in cache
+    #----------------------------------------------
+    ## -- due to bug with github caching, only one cache works in a job, so
+    ## -- to fix this the two caches are currently combined...
+    - name: Load cached Poetry installation
+      id: cached-poetry-install
+      uses: actions/cache@v2
+      with:
+        ## path: ~/.local
+        ## key: poetry-install-0
+        path: |
+          .venv
+          ~/.local
+        key: povenv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+
+    - name: Install Poetry
+      if: steps.cached-poetry-install.outputs.cache-hit != 'true'
+      uses: snok/install-poetry@v1
+      with:
+        version: ${{ inputs.poetry-version }}
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+    #----------------------------------------------
+    # install/activate dependencies
+    #----------------------------------------------
+    ## - name: Load cached venv
+    ##   id: cached-poetry-dependencies
+    ##   uses: actions/cache@v2
+    ##   with:
+    ##     path: .venv
+    ##     key: pvenv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+
+    - name: Install dependencies
+      run: poetry install --no-interaction --no-root
+
+# end
