@@ -54,6 +54,7 @@ runs:
         path: |
           .venv
           ~/.local
+          ~/.cache
         key: povenv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
 
     - name: Install Poetry
