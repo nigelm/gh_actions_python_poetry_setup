@@ -54,8 +54,8 @@ runs:
         path: |
           .venv
           ~/.local
-          ~/.cache
-        key: povenv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+          ~/.cache/pre-commit
+        key: pvenv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
 
     - name: Install Poetry
       if: steps.cached-poetry-install.outputs.cache-hit != 'true'
@@ -76,6 +76,13 @@ runs:
 
     - name: Install dependencies
       run: poetry install --no-interaction --no-root
+      shell: bash
+
+    # this is done here to get the dependancies into the cache
+    # since nothing will have changed in repo, everything will
+    # be skipped, so will only load the requirementa in
+    - name: Install pre-commit modules
+      run: poetry run pre-commit run | fgrep -v Skipped
       shell: bash
 
 # end
