@@ -3,11 +3,7 @@
 This does the setup process for a [python](https://www.python.org/) [poetry]
 (https://python-poetry.org/) project.
 
-It:-
-    - checks out the project
-    - installs python
-    - installs poetry
-    - builds the dependency set
+It:- - checks out the project - installs python - installs poetry - builds the dependency set
 
 This is cached as much as possible.
 
